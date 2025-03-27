@@ -31,6 +31,8 @@ Move to the initial position
 
 # Limitation
 1、It can only be used in a rectangular area
+
 2、Currently, all the boundaries of the mover need to be in the rectangular region
+
 3、Currently, It does not support the mixing of mover size
 
