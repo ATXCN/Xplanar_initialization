@@ -1,4 +1,4 @@
-# Xpanar_initialization
+# Xplanar_initialization
 The Demo program about Xplanar initialization of Beckhoff
 
 # 1、First Step
