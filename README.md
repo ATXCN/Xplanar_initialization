@@ -20,6 +20,17 @@ Sort by column
 # 4、Forth Step
 Group sorting based on settings or default parameters
 
+![未命名绘图 drawio (4)](https://github.com/user-attachments/assets/f411eb34-674c-4e84-9ae4-58c6840ba348)
+
 
 # 5、Last Step
 Move to the initial position
+
+![未命名绘图 drawio (5)](https://github.com/user-attachments/assets/5bd74708-7c2c-4491-b9ef-8ed1f0b9c5d4)
+
+
+# Limitation
+1、It can only be used in a rectangular area
+2、Currently, all the boundaries of the mover need to be in the rectangular region
+3、Currently, It does not support the mixing of mover size
+
