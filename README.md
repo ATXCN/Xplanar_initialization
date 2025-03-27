@@ -1,4 +1,4 @@
-# Xpanar_initialization
+# Xplanar_initialization
 The Demo program about Xplanar initialization of Beckhoff
 
 In theory, as long as there is enough spacing for the movers to move, no matter how many movers are in the specified area, they can move to their initial position
