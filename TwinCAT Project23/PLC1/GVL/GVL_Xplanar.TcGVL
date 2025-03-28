@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <GVL Name="GVL_Xplanar" Id="{1cbba30c-d9af-486d-a0f5-3c4a32d0fb53}">
+    <Declaration><![CDATA[VAR_GLOBAL
+	CONSTANT
+		MAX_STATION_NUMBER		: UDINT :=3;
+		MAX_MOVERS							: UDINT := 19;
+END_VAR
+VAR_GLOBAL
+//	MAX_MOVERS		: UDINT:=Tc3_XPlanarStandard.Params_XPlanar.moverCount;
+//	MAX_TRACKS		: UDINT:=Tc3_XPlanarStandard.Params_XPlanar.maxTrackCount;
+
+	stStationPos						:ARRAY[1..MAX_STATION_NUMBER] OF ST_StationPosition;
+	stStationVis						:ARRAY[1..MAX_STATION_NUMBER] OF ST_VisStationData;
+	stMoverVis						:ARRAY[1..Tc3_XPlanarStandard.Params_XPlanar.moverCount] OF ST_VisMover;
+	
+	SetInitVelo					: LREAL:=500;
+	SetInitAccDec				: LREAL:=1000;
+	SetInitJerk						: LREAL:=5000;
+	
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

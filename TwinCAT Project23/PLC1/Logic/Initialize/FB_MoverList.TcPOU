@@ -1,0 +1,166 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_MoverList" Id="{a2667dab-69b3-4175-8c22-d7e1cc85801c}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_MoverList
+VAR_OUTPUT	
+	List									: ARRAY[0..MAX_MOVERS] OF INT; //starts from 0, element zero is the number in the list 
+END_VAR
+VAR
+	i: INT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Adding and removing stuff to a list can be a difficult as such a block has 
+// been built with methods to add/remove from a list. 
+// list acts like a FIFO, the list is filled from the back and emptied from the front. ]]></ST>
+    </Implementation>
+    <Method Name="M_AddToList" Id="{5b9e86a5-a158-427c-97ec-d124d4eb6f67}">
+      <Declaration><![CDATA[METHOD M_AddToList
+VAR_INPUT
+	IDToAdd: INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// Movers are handled in a FIFO manner new movers are added to the end of the list 
+List[0] 					:= List[0] +1; //List[0] holds the number of movers in the list 
+List[List[0]] 				:= IDToAdd; //whern there is 1 in the list, List[0] = 1 and LIst[1] = IDToAdd ]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_ClearList" Id="{347f8aed-0cdc-4834-a469-64c7c83ac020}">
+      <Declaration><![CDATA[METHOD M_ClearList
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[MEMSET(destAddr:=ADR(List),fillByte:=0,n:=SIZEOF(List)); ]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_CopyList" Id="{23b7a85d-6afb-44c8-8b8c-26e12ba0cac3}">
+      <Declaration><![CDATA[METHOD M_CopyList
+VAR_INPUT
+	ListToCopy: ARRAY[0..MAX_MOVERS] OF INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// method to copy a complete list, don't allow an extrnal copy unless its with a method
+List := ListToCopy; ]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_GetFirstInList" Id="{6f4ba9d2-1c2a-466d-838d-e3fceedf2714}">
+      <Declaration><![CDATA[METHOD M_GetFirstInList : INT
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[M_GetFirstInList := List[1]; ]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_RecycleDown" Id="{d1614f47-eee1-4fa3-aba0-795ae06e52cf}">
+      <Declaration><![CDATA[METHOD M_RecycleDown : BOOL
+VAR
+	iTemp: INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[iTemp							:= List[MAX_MOVERS];
+MEMCPY(ADR(List[2]),ADR(List[1]),SIZEOF(List)-SIZEOF(List[1])*2);
+List[1]							:=iTemp;
+M_RecycleDown					:= TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_RemoveFromList" Id="{43c80c11-fff1-4b41-8cf6-b01765332bc3}">
+      <Declaration><![CDATA[METHOD M_RemoveFromList : INT
+VAR
+	I: INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//If there is something in the list, get the first element 
+IF List[0] >= 1 THEN 
+	M_RemoveFromList := List[1]; //List [1] is the first in the list, list[0] contains the number of items in the list  
+	MEMCPY(ADR(List[1]),ADR(List[2]),SIZEOF(List)- 2 * SIZEOF(List[1])); //start at address 2 and copy the size of the list minus elements 0 and 1 
+	List[MAX_MOVERS] := -1; //the last item in the list is now -1 
+	List[0] := List[0]-1; // there is now one less item in the list 
+ELSE //there was nothing in the list, return an invalid mover number 
+	M_RemoveFromList := -1;// return an invalid mover 
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_RemoveLastFromList" Id="{1c0be62f-280e-4c15-a34f-d0f364bee233}">
+      <Declaration><![CDATA[METHOD M_RemoveLastFromList : int
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF List[0] >= 1 THEN 
+	M_RemoveLastFromList := List[ List[0]]; //List [1] is the first in the list, list[0] contains the number of items in the list  
+	List[ List[0]]:=0;
+	List[0]:=List[0]-1;
+ELSE //there was nothing in the list, return an invalid mover number 
+	M_RemoveLastFromList := -1;// return an invalid mover 
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_ReverseList" Id="{62fde437-6f30-4513-b4a1-f60f6afc62c2}">
+      <Declaration><![CDATA[METHOD M_ReverseList : BOOL
+VAR
+	TempList: ARRAY[0..MAX_MOVERS] OF INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[ 
+TempList:=List;
+FOR i:=1 TO TempList[0] DO
+	List[i]						:=TempList[TempList[0]+1-i];
+END_FOR
+M_ReverseList					:= TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="P_NumInList" Id="{a7ec8362-0726-40db-a159-b3a05573917b}">
+      <Declaration><![CDATA[PROPERTY P_NumInList : INT
+]]></Declaration>
+      <Get Name="Get" Id="{4e7b17d0-eee7-47a5-a720-101411499c9e}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[P_NumInList:= List[0]; ]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <LineIds Name="FB_MoverList">
+      <LineId Id="3" Count="1" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_MoverList.M_AddToList">
+      <LineId Id="3" Count="1" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_MoverList.M_ClearList">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_MoverList.M_CopyList">
+      <LineId Id="3" Count="0" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_MoverList.M_GetFirstInList">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_MoverList.M_RecycleDown">
+      <LineId Id="3" Count="2" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_MoverList.M_RemoveFromList">
+      <LineId Id="3" Count="7" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_MoverList.M_RemoveLastFromList">
+      <LineId Id="6" Count="1" />
+      <LineId Id="14" Count="0" />
+      <LineId Id="13" Count="0" />
+      <LineId Id="11" Count="1" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_MoverList.M_ReverseList">
+      <LineId Id="21" Count="4" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_MoverList.P_NumInList.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
